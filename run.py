@@ -42,8 +42,8 @@ def run_api_server():
     )
 
 
-def run_single_analysis(video_path: str, speaker_name: str, speaker_role: str, 
-                       debate_topic: str, team_side: str):
+def run_single_analysis(video_path: str, speaker_name: str, speaker_role: str,
+                       debate_topic: str, team_side: str, is_reply_speech: bool = False):
     """Run analysis on a single video file."""
     import asyncio
     from src.core.processor import DebateAnalysisProcessor
@@ -73,6 +73,7 @@ def run_single_analysis(video_path: str, speaker_name: str, speaker_role: str,
                 speaker_role=role_enum,
                 debate_topic=debate_topic,
                 team_side=team_side,
+                is_reply_speech=is_reply_speech,
                 progress_callback=progress_callback
             )
             
@@ -82,16 +83,17 @@ def run_single_analysis(video_path: str, speaker_name: str, speaker_role: str,
             print("="*60)
             print(f"Speaker: {result.speaker_name}")
             print(f"Role: {result.speaker_role.value}")
+            print(f"Speech Type: {'Reply Speech (30-40 pts)' if is_reply_speech else 'Main Speech (60-80 pts)'}")
             print(f"Topic: {result.debate_topic}")
             print(f"Side: {result.team_side}")
             print(f"Processing Time: {result.processing_time:.1f}s")
             print(f"Video Duration: {result.video_duration:.1f}s")
-            
-            print("\nSCORES:")
-            print(f"Matter: {result.wsd_score.matter_score:.1f}")
-            print(f"Manner: {result.wsd_score.manner_score:.1f}")
-            print(f"Method: {result.wsd_score.method_score:.1f}")
-            print(f"Total: {result.wsd_score.total_score:.1f}")
+
+            print("\nOFFICIAL WSD SCORES:")
+            print(f"Style (40%): {result.wsd_score.manner_score:.2f}")
+            print(f"Content (40%): {result.wsd_score.matter_score:.2f}")
+            print(f"Strategy (20%): {result.wsd_score.method_score:.2f}")
+            print(f"Total Speaker Points: {result.wsd_score.total_score:.1f}")
             
             print(f"\nOverall Feedback:")
             print(result.wsd_score.overall_feedback)
@@ -133,9 +135,11 @@ def main():
                                choices=[role.value for role in SpeakerRoleEnum],
                                help="Speaker role")
     analyze_parser.add_argument("--debate-topic", required=True, help="Debate topic")
-    analyze_parser.add_argument("--team-side", required=True, 
+    analyze_parser.add_argument("--team-side", required=True,
                                choices=["Proposition", "Opposition"],
                                help="Team side")
+    analyze_parser.add_argument("--reply-speech", action="store_true",
+                               help="Mark as reply speech (30-40 points instead of 60-80)")
     
     args = parser.parse_args()
     
@@ -157,7 +161,8 @@ def main():
             speaker_name=args.speaker_name,
             speaker_role=args.speaker_role,
             debate_topic=args.debate_topic,
-            team_side=args.team_side
+            team_side=args.team_side,
+            is_reply_speech=args.reply_speech
         )
     
     else:

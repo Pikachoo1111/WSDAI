@@ -24,17 +24,54 @@ An advanced AI system that evaluates World Schools Debate speeches with precisio
   - Reading reliance detection
   - Facial expressiveness assessment
 
-### WSD Rubric Evaluation
+### Official World Schools Debate Rubric
 
-The system evaluates speeches according to official World Schools Debate criteria:
+The system uses the **official World Schools Debate scoring system** with precise criteria and weightings:
 
-- **Matter (40%)**: Content quality, evidence, logical consistency, clash engagement
-- **Manner (30%)**: Delivery style, clarity, persuasiveness, audience engagement
-- **Method (30%)**: Structure, signposting, time management, role fulfillment
+#### Scoring Ranges:
+- **Main Speeches**: 60-80 points
+- **Reply Speeches**: 30-40 points
+
+#### Official WSD Criteria:
+
+**Style (40%)**
+- Communication clarity using effective rate, pitch, tone
+- Hand gestures, facial expressions, posture
+- Eye contact and audience engagement
+- Notes for reference only (not reading speeches)
+
+**Content (40%)**
+- Argumentation quality divorced from delivery style
+- Evidence strength and factual accuracy
+- Logical reasoning and analysis depth
+- Weak arguments marked regardless of opponent response
+
+**Strategy (20%)**
+- Understanding issue importance and prioritization
+- Time allocation based on relative importance
+- Speech structure and timing choices
+- Points of Information handling
+
+#### Speaker Point Ranges:
+**Main Speeches (60-80 points):**
+- **78-80**: Outstanding performance across all criteria
+- **75-77**: Strong performance with minor weaknesses
+- **72-74**: Solid performance meeting expectations
+- **68-71**: Adequate performance with clear areas for improvement
+- **64-67**: Below average performance with significant issues
+- **60-63**: Weak performance requiring substantial development
+
+**Reply Speeches (30-40 points):**
+- **39-40**: Outstanding reply speech
+- **37-38**: Strong reply with minor weaknesses
+- **36**: Solid reply meeting expectations
+- **34-35**: Adequate reply with room for improvement
+- **32-33**: Below average reply
+- **30-31**: Weak reply requiring development
 
 ### Output & Feedback
 
-- **Detailed Scores**: Rubric-aligned scoring (0-100) with component breakdowns
+- **Standard Speaker Points**: Official WSD 60-80 scoring system with component breakdowns
 - **Qualitative Feedback**: Strengths, weaknesses, and actionable improvement tips
 - **Analytics Dashboard**: Performance trends, delivery heatmaps, progress tracking
 - **Comparative Analysis**: Multi-speech comparison and ranking
@@ -177,7 +214,8 @@ print(f"Progress: {status.json()['progress']*100:.1f}%")
 # Get results (when completed)
 results = requests.get(f'http://localhost:8000/analysis/{analysis_id}')
 scores = results.json()['wsd_score']
-print(f"Total Score: {scores['total_score']:.1f}")
+print(f"Speaker Points: {scores['total_score']:.1f}")
+print(f"Style: {scores['manner_score']:.2f} | Content: {scores['matter_score']:.2f} | Strategy: {scores['method_score']:.2f}")
 ```
 
 ## 🧪 Testing
@@ -212,10 +250,16 @@ SAMPLE_RATE=16000
 FACE_DETECTION_CONFIDENCE=0.5
 EYE_CONTACT_THRESHOLD=0.7
 
-# Rubric Weights
-MATTER_WEIGHT=0.4
-MANNER_WEIGHT=0.3
-METHOD_WEIGHT=0.3
+# Official World Schools Debate Scoring System
+MAIN_SPEECH_MIN_SCORE=60
+MAIN_SPEECH_MAX_SCORE=80
+REPLY_SPEECH_MIN_SCORE=30
+REPLY_SPEECH_MAX_SCORE=40
+
+# Official WSD Criteria Weights
+STYLE_WEIGHT=0.4    # Communication, delivery (40%)
+CONTENT_WEIGHT=0.4  # Argumentation quality (40%)
+STRATEGY_WEIGHT=0.2 # Issue prioritization, timing (20%)
 
 # File Limits
 MAX_FILE_SIZE=524288000     # 500MB

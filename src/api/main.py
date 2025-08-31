@@ -94,18 +94,20 @@ async def upload_video(
     speaker_name: str = Form(...),
     speaker_role: SpeakerRoleEnum = Form(...),
     debate_topic: str = Form(...),
-    team_side: str = Form(...)
+    team_side: str = Form(...),
+    is_reply_speech: bool = Form(False)
 ):
     """
     Upload video for analysis.
-    
+
     Args:
         file: Video file
         speaker_name: Name of the speaker
         speaker_role: Speaker's role in the debate
         debate_topic: Topic of the debate
         team_side: Proposition or Opposition
-        
+        is_reply_speech: Whether this is a reply speech (30-40 points) or main speech (60-80 points)
+
     Returns:
         Analysis ID and status
     """
@@ -155,6 +157,7 @@ async def upload_video(
             "speaker_role": speaker_role,
             "debate_topic": debate_topic,
             "team_side": team_side,
+            "is_reply_speech": is_reply_speech,
             "file_size": len(content)
         }
         
@@ -195,6 +198,7 @@ async def process_video_analysis(request_data: dict):
             speaker_role=request_data["speaker_role"],
             debate_topic=request_data["debate_topic"],
             team_side=request_data["team_side"],
+            is_reply_speech=request_data["is_reply_speech"],
             progress_callback=lambda p, m: update_analysis_progress(analysis_id, p, m)
         )
         

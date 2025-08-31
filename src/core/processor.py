@@ -219,6 +219,7 @@ class DebateAnalysisProcessor:
         speaker_role: SpeakerRoleEnum,
         debate_topic: str,
         team_side: str,
+        is_reply_speech: bool = False,
         progress_callback: Optional[Callable[[float, str], None]] = None
     ) -> AnalysisResultResponse:
         """
@@ -284,8 +285,8 @@ class DebateAnalysisProcessor:
                 progress_callback(0.85, "Evaluating against WSD rubric...")
             
             speaker_role_internal = self.convert_speaker_role(speaker_role)
-            wsd_score = self.rubric_evaluator.evaluate_speech(
-                stt_result, sentiment_result, style_result, speaker_role_internal
+            wsd_score = await self.rubric_evaluator.evaluate_speech(
+                stt_result, sentiment_result, style_result, speaker_role_internal, is_reply_speech
             )
             logger.info(f"WSD evaluation completed: total={wsd_score.total_score:.1f}")
             
